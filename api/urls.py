@@ -1,12 +1,21 @@
 from django.urls import path, include
 from api.view.OrderView import OrderCreateView, OrderListView, OrderDetailView
-from api.view.CustomerView import CustomerRetrieveView, CustomerUpdateView, CustomerRegisterView, CustomAuthToken, CustomerListView
+from api.view.CustomerView import (
+    CustomerRetrieveView, 
+    CustomerUpdateView, 
+    CustomerRegisterView, 
+    CustomAuthToken, 
+    CustomerListView, 
+    RefreshTokenView,
+    LogoutView
+)
 from api.view.ProductView import (
     ProductListView,
     ProductCreateView,
     ProductRetrieveView,
     ProductUpdateView,
-    ProductDeleteView
+    ProductDeleteView,
+    ProductByCategoryView
 )
 from api.view.CategoryView import (
     CategoryListView,
@@ -38,6 +47,7 @@ from api.view.DiscountView import (
     DiscountUpdateView,
     DiscountDeleteView
 )
+from api.view.ContactView import contact_us
 router = routers.DefaultRouter()
 
 urlpatterns = [
@@ -45,9 +55,12 @@ urlpatterns = [
     path('customers/', CustomerListView.as_view(), name='customer-list'),
     path("customer/profile/", CustomerRetrieveView.as_view(), name="customer-profile"),
     path("customer/update/", CustomerUpdateView.as_view(), name="customer-update"),
-    path("customer/register/", CustomerRegisterView.as_view(), name="customer-register"),
-    path("customer/login/", CustomAuthToken.as_view(), name="customer-login"),
+    # path("customer/register/", CustomerRegisterView.as_view(), name="customer-register"),
     
+    path("login/", CustomAuthToken.as_view(), name="customer-login"),
+    path('register/', CustomerRegisterView.as_view(), name='register'),  # Registro de usuario
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('token/refresh-cookie/', RefreshTokenView.as_view(), name='refresh_cookie'),  # Renovación personalizada con cookies
     
     # Productos
     path('products/', ProductListView.as_view(), name='product-list'),
@@ -55,6 +68,7 @@ urlpatterns = [
     path('products/<str:name>/', ProductRetrieveView.as_view(), name='product-retrieve'),
     path('products/<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),
     path('products/<int:pk>/delete/', ProductDeleteView.as_view(), name='product-delete'),
+    path('products/category/<str:category_name>/', ProductByCategoryView.as_view(), name='product-by-category'),
 
     
     # Categorías
@@ -97,6 +111,9 @@ urlpatterns = [
     path('discounts/create/', DiscountCreateView.as_view(), name='discount-create'),
     path('discounts/<int:pk>/update/', DiscountUpdateView.as_view(), name='discount-update'),
     path('discounts/<int:pk>/delete/', DiscountDeleteView.as_view(), name='discount-delete'),
+    
+    #Contacto
+    path("contact-us/", contact_us, name="contact_us"),
 
     # Enrutador para otras rutas ViewSet (si es necesario)
     path('', include(router.urls)),

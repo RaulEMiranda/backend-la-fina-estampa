@@ -5,6 +5,7 @@ import cloudinary.api
 from pathlib import Path
 from dotenv import load_dotenv
 import pymysql
+from datetime import timedelta
 pymysql.install_as_MySQLdb()
 load_dotenv()
 
@@ -48,6 +49,10 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware'
 ]
 
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
@@ -76,10 +81,10 @@ WSGI_APPLICATION = 'myheropolo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'myheropolo',
-        'USER': 'root',
-        'PASSWORD': 'Kakaroto1498',
-        'HOST': 'localhost',
+        'NAME': 'bzunifhsivfofkbj2d3l',
+        'USER': 'uizch2yfujthbth9',
+        'PASSWORD': '48GGRe4aGWRlEbaNVS6V',
+        'HOST': 'bzunifhsivfofkbj2d3l-mysql.services.clever-cloud.com',
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -119,10 +124,10 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ],
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     # ],
@@ -131,6 +136,11 @@ REST_FRAMEWORK = {
     #     'rest_framework.filters.SearchFilter',
     #     'rest_framework.filters.OrderingFilter',
     # ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -162,3 +172,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_USER_PASSWORD')
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
