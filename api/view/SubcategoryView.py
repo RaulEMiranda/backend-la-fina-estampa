@@ -6,14 +6,14 @@ from api.serializers.SubcategorySerializer import SubcategorySerializer
 
 @extend_schema(
     summary="Lista las subcategorías",
-    description="Obtiene una lista de subcategorías con opción de filtrar por categoría usando el parámetro `category`.",
+    description="Obtiene una lista de subcategorías con opción de filtrar por categoría usando el parámetro `category_name`.",
     parameters=[
         OpenApiParameter(
-            name="category",
-            type=int,
+            name="category_name",
+            type=str,
             location=OpenApiParameter.QUERY,
             required=False,
-            description="Filtrar subcategorías por ID de categoría"
+            description="Filtrar subcategorías por nombre de categoría"
         )
     ],
     responses={200: SubcategorySerializer(many=True)}
@@ -21,15 +21,17 @@ from api.serializers.SubcategorySerializer import SubcategorySerializer
 class SubcategoryListView(generics.ListAPIView):
     """
     API para listar subcategorías.  
-    Se puede filtrar por `category_id` en la URL.
+    Se puede filtrar por `category_name` en la URL.
     """
     serializer_class = SubcategorySerializer
 
     def get_queryset(self):
-        category_id = self.request.query_params.get('category')
+        category_name = self.request.query_params.get('category_name')
         queryset = Subcategory.objects.all()
-        if category_id:
-            queryset = queryset.filter(category_id=category_id)
+        
+        if category_name:
+            queryset = queryset.filter(category__name__iexact=category_name)  # Búsqueda insensible a mayúsculas/minúsculas
+        
         return queryset
 
 
