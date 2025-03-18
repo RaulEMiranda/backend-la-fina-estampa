@@ -1,47 +1,59 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
-import json
+from drf_spectacular.utils import extend_schema
+from django.http import JsonResponse
 
-def contact_us(request):
-    if request.method == "POST":
-        try:
-            # Decodificar el cuerpo de la solicitud JSON
-            data = json.loads(request.body)
-            full_name = data.get("full_name")  # Nombre completo del usuario
-            email = data.get("email")  # Correo electrónico del usuario
-            subject = data.get("subject")  # Asunto del mensaje
-            message = data.get("message")  # Contenido del mensaje
+class ContactUsView(APIView):
+    @extend_schema(
+        summary="Enviar mensaje de contacto",
+        description="Permite a los usuarios enviar un mensaje a través del formulario de contacto.",
+        request={
+            "application/json": {
+                "example": {
+                    "full_name": "John Doe",
+                    "email": "johndoe@example.com",
+                    "subject": "Consulta sobre productos",
+                    "message": "Hola, me gustaría saber más sobre sus productos."
+                }
+            }
+        },
+        responses={
+            200: JsonResponse({"message": "Correo enviado exitosamente."}),
+            400: JsonResponse({"error": "Todos los campos son obligatorios."}),
+            500: JsonResponse({"error": "Se produjo un error inesperado."}),
+        },
+    )
+    def post(self, request):
+        """
+        API para enviar un mensaje de contacto.
+        """
+        data = request.data
+        full_name = data.get("full_name")
+        email = data.get("email")
+        subject = data.get("subject")
+        message = data.get("message")
 
-            # Validación de campos obligatorios
-            if not all([full_name, email, subject, message]):
-                return JsonResponse({"error": "Todos los campos son obligatorios."}, status=400)
+        if not all([full_name, email, subject, message]):
+            return Response({"error": "Todos los campos son obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Formatear el contenido del correo
-            email_subject = f"Mensaje de Contacto: {subject}"
-            email_message = f"""
-            Nombre completo: {full_name}
-            Correo electrónico: {email}
+        email_subject = f"Mensaje de Contacto: {subject}"
+        email_message = f"""
+        Nombre completo: {full_name}
+        Correo electrónico: {email}
 
-            Mensaje:
-            {message}
-            """
+        Mensaje:
+        {message}
+        """
 
-            # Enviar el correo
-            send_mail(
-                email_subject,
-                email_message,
-                settings.EMAIL_HOST_USER,  # Remitente (de settings.py)
-                ["rauledmore98@outlook.com"],  # Destinatario
-                fail_silently=False,
-            )
+        send_mail(
+            email_subject,
+            email_message,
+            settings.EMAIL_HOST_USER,
+            ["rauledmore98@outlook.com"],
+            fail_silently=False,
+        )
 
-            # Respuesta de éxito
-            return JsonResponse({"message": "Correo enviado exitosamente."})
-        except Exception as e:
-            # Manejo de errores
-            return JsonResponse({"error": f"Se produjo un error: {str(e)}"}, status=500)
-    else:
-        # Respuesta para métodos que no sean POST
-        return JsonResponse({"error": "Método no permitido."}, status=405)
+        return Response({"message": "Correo enviado exitosamente."}, status=status.HTTP_200_OK)
