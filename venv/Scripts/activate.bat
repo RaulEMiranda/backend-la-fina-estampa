@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=D:\Desarrollo\Django\1\venv
+set VIRTUAL_ENV=D:\Desarrollo\La fina Estampa\Backend -MyHeroPolo\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

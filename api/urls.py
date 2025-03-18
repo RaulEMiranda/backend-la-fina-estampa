@@ -1,4 +1,5 @@
 from django.urls import path, include
+from api.view.ContactView import ContactUsView
 from api.view.OrderView import OrderCreateView, OrderListView, OrderDetailView
 from api.view.CustomerView import (
     CustomerRetrieveView, 
@@ -47,7 +48,7 @@ from api.view.DiscountView import (
     DiscountUpdateView,
     DiscountDeleteView
 )
-from api.view.ContactView import contact_us
+
 router = routers.DefaultRouter()
 
 urlpatterns = [
@@ -113,7 +114,7 @@ urlpatterns = [
     path('discounts/<int:pk>/delete/', DiscountDeleteView.as_view(), name='discount-delete'),
     
     #Contacto
-    path("contact-us/", contact_us, name="contact_us"),
+    path("contact/", ContactUsView.as_view(), name="contact-us"),
 
     # Enrutador para otras rutas ViewSet (si es necesario)
     path('', include(router.urls)),
